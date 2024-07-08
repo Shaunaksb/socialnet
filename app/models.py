@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 class LoginAttempt(models.Model):
     user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL)
@@ -28,3 +29,20 @@ class APIAccessLog(models.Model):
 
     def __str__(self):
         return f"{self.method} {self.endpoint} - {self.response_status}"
+    
+class FriendRequest(models.Model):
+    User = get_user_model()
+
+    # Change the id field to use AutoField for randomized integers
+    id = models.BigAutoField(primary_key=True)
+    from_user = models.ForeignKey(User, related_name='sent_friend_requests', on_delete=models.CASCADE)
+    to_user = models.ForeignKey(User, related_name='received_friend_requests', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=[
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected')
+    ], default='pending')
+
+    class Meta:
+        unique_together = ('from_user', 'to_user')
