@@ -7,7 +7,6 @@ dotenv.load_dotenv(dotenv_file)
 
 from django.core.management.utils import get_random_secret_key
 scrt=get_random_secret_key()
-print(scrt)
 dotenv.set_key('.env', 'SECRET_KEY', scrt)
 
 subprocess.run("docker-compose up --build -d", shell=True, )
@@ -31,7 +30,7 @@ def pid():
         print("OS not supported, Contact the developer for more information.")
     return pid.stdout.strip()
 cid=pid()
-print(cid)
+print("web service running with container id=",cid)
 ver=subprocess.run(f'docker exec {cid} python --version', shell=True, capture_output=True, text=True)
 print(ver.stdout.strip())
 
