@@ -1,4 +1,14 @@
 import subprocess
+import os
+import dotenv
+
+dotenv_file = dotenv.find_dotenv()
+dotenv.load_dotenv(dotenv_file)
+
+from django.core.management.utils import get_random_secret_key
+scrt=get_random_secret_key()
+print(scrt)
+dotenv.set_key('.env', 'SECRET_KEY', scrt)
 
 subprocess.run("docker-compose up --build -d", shell=True, )
 
@@ -12,8 +22,15 @@ if search_string and another_string in result.stdout:
 else:
     print("Build Failed. Please check the logs for more information.")
 
-pid = subprocess.run("docker ps -aqf name=socialnet-web", shell=True, capture_output=True, text=True)
-cid=pid.stdout.strip()
+def pid():
+    if os.name == "nt":
+        pid = subprocess.run("docker ps -aqf name=socialnet-web", shell=True, capture_output=True, text=True)
+    elif os.name == "posix":
+        pid = subprocess.run("docker ps -aqf name=socialnet-web", shell=True, capture_output=True, text=True)
+    else:
+        print("OS not supported, Contact the developer for more information.")
+    return pid.stdout.strip()
+cid=pid()
 print(cid)
 ver=subprocess.run(f'docker exec {cid} python --version', shell=True, capture_output=True, text=True)
 print(ver.stdout.strip())
