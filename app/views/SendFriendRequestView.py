@@ -20,7 +20,7 @@ class SendFriendRequestView(APIView):
         # Rate limiting
         cache_key = f"friend_requests_{request.user.id}"
         requests_made = cache.get(cache_key, 0)
-        if requests_made >= 100:
+        if requests_made >= 3:
             return Response({"error": "Rate limit exceeded. Try again later."}, status=status.HTTP_429_TOO_MANY_REQUESTS)
 
         friend_request, created = FriendRequest.objects.get_or_create(
